@@ -7,7 +7,14 @@
 
 import Foundation
 
-struct Profile {
+struct GENAccountDetails {
+    let profile: GENProfile
+    let account: GENAccount
+    let recipients: [GENRecipient]
+    let transactions: [GENTransaction]
+}
+
+struct GENProfile {
     let firstName: String
     let lastName: String
 }
@@ -17,19 +24,19 @@ enum TransactionType: String {
     case debit = "Debit"
 }
 
-struct Transaction {
+struct GENTransaction {
     let type: TransactionType
     let name: String
     let amount: Double
     let timestamp: Date
 }
 
-struct Account {
+struct GENAccount {
     let currentBalance: Double
-    let transactions: [Transaction]
+    let transactions: [GENTransaction]
 }
 
-struct Recipient {
+struct GENRecipient {
     let name: String
     let picture: String
     let isOnline: Bool
