@@ -19,13 +19,13 @@ struct GENProfile {
     let lastName: String
 }
 
-enum TransactionType: String {
+enum GENTransactionType: String {
     case credit = "Credit"
     case debit = "Debit"
 }
 
 struct GENTransaction {
-    let type: TransactionType
+    let type: GENTransactionType
     let name: String
     let amount: Double
     let timestamp: Date
@@ -40,4 +40,10 @@ struct GENRecipient {
     let name: String
     let picture: String
     let isOnline: Bool
+}
+
+extension GENAccount {
+    var formattedBalance: String {
+        String(format: "$ %.2f", currentBalance)
+    }
 }
