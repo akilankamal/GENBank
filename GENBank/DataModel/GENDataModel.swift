@@ -36,7 +36,8 @@ struct GENAccount {
     let transactions: [GENTransaction]
 }
 
-struct GENRecipient {
+struct GENRecipient: Identifiable {
+    let id = UUID()
     let name: String
     let picture: String
     let isOnline: Bool

@@ -21,22 +21,34 @@ struct GENHomeView: View {
                 Divider()
                     .padding(.vertical, 8)
 
-                GENBalanceView(formattedBalance: viewModel.accountDetails?.account.formattedBalance ?? "$0.00")
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 8)
+                // Scrollable content
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        GENBalanceView(formattedBalance: viewModel.accountDetails?.account.formattedBalance ?? "$0.00")
+                            .padding(.horizontal, 24)
+                            .padding(.bottom, 8)
 
-                if let txs = viewModel.accountDetails?.account.transactions {
-                    GENBalanceChartView(transactions: txs)
-                        .frame(height: 180)
-                        .cornerRadius(12)
-                        .padding(.horizontal, 24)
-                        .padding(.bottom, 8)
+                        if let txs = viewModel.accountDetails?.account.transactions {
+                            GENBalanceChartView(transactions: txs)
+                                .frame(height: 180)
+                                .cornerRadius(12)
+                                .padding(.horizontal, 24)
+                                .padding(.bottom, 8)
+                        }
+
+                        if let recipients = viewModel.accountDetails?.recipients {
+                            RecipientsSection(recipients: recipients)
+                                .padding(.horizontal, 16)
+                                .padding(.top, 16)
+                        }
+                    }
                 }
 
-                Spacer()
+                Spacer(minLength: 0)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
 
+            // Fixed bottom bar
             VStack {
                 Spacer()
                 HStack {
