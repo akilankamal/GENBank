@@ -90,7 +90,7 @@ extension GENDashboardView {
         .background(Color(.systemGroupedBackground).ignoresSafeArea(edges: .bottom))
     }
     
-    fileprivate func FloatingPlusButton() -> Button<some View> {
+    fileprivate func FloatingPlusButton() -> some View {
         return Button(action: {
             // Action for +
         }) {

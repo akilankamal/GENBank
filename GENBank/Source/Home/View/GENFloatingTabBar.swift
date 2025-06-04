@@ -41,7 +41,7 @@ struct GENFloatingTabBar: View {
 }
 
 extension GENFloatingTabBar {
-    private func TabBarButton(_ tab: Tab) -> Button<some View> {
+    private func TabBarButton(_ tab: Tab) -> some View {
         return Button(action: { selected = tab }) {
             HStack {
                 Image(systemName: tab.icon)

@@ -120,7 +120,7 @@ extension GENBalanceChartView {
         .background(Color.black)
     }
     
-    private func ChartOverlayView(_ proxy: ChartProxy) -> GeometryReader<TupleView<(some View, SelectedAmountLabel?)>?> {
+    private func ChartOverlayView(_ proxy: ChartProxy) -> some View {
         return GeometryReader { geo in
             if let plotFrame = proxy.plotFrame {
                 
@@ -155,7 +155,7 @@ extension GENBalanceChartView {
         }
     }
     
-    private func ChartRangeSegment() -> HStack<ForEach<[ChartRange], String, Button<some View>>> {
+    private func ChartRangeSegment() -> some View {
         return HStack(spacing: 0) {
             ForEach(ChartRange.allCases) { range in
                 Button(action: {

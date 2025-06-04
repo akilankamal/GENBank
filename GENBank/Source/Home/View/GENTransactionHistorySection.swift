@@ -7,18 +7,31 @@
 
 import SwiftUI
 
-enum TransactionFilter: String, CaseIterable, Identifiable {
-    case today = "Today"
-    case lastWeek = "Last week"
-    case lastMonth = "Last month"
-    case lastYear = "Last year"
-    var id: String { rawValue }
-}
-
 struct TransactionHistorySection: View {
+    
+    private enum TXT {
+        static let transactionHistory       = "Transactions history"
+    }
+    
+    private enum ASSET {
+        static let downArrow                = "chevron.down"
+    }
+    
+    private enum TransactionFilter: String, CaseIterable, Identifiable {
+        case today = "Today"
+        case lastWeek = "Last week"
+        case lastMonth = "Last month"
+        case lastYear = "Last year"
+        
+        var id: String { rawValue }
+    }
+    
+    // Transactions to display, obtained from account details
     let transactions: [GENTransaction]
+    
+    // Selected filter state
     @State private var selectedFilter: TransactionFilter = .today
-
+    
     var filteredTransactions: [GENTransaction] {
         let now = Date()
         let calendar = Calendar.current
@@ -40,13 +53,18 @@ struct TransactionHistorySection: View {
         }
         return transactions
     }
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text("Transactions history")
+                
+                // Section title
+                Text(TXT.transactionHistory)
                     .font(.headline)
+                
                 Spacer()
+                
+                // Filter menu
                 Menu {
                     ForEach(TransactionFilter.allCases) { filter in
                         Button(action: { selectedFilter = filter }) {
@@ -57,14 +75,14 @@ struct TransactionHistorySection: View {
                     HStack(spacing: 4) {
                         Text(selectedFilter.rawValue)
                             .foregroundColor(.gray)
-                        Image(systemName: "chevron.down")
+                        Image(systemName: ASSET.downArrow)
                             .foregroundColor(.gray)
                             .font(.system(size: 14, weight: .medium))
                     }
                 }
             }
             .padding(.bottom, 4)
-
+            
             ForEach(filteredTransactions) { tx in
                 TransactionRow(transaction: tx)
             }
@@ -75,8 +93,14 @@ struct TransactionHistorySection: View {
 }
 
 struct TransactionRow: View {
+    
+    private enum TXT {
+        static let deposit                  = "Deposit"
+        static let payment                  = "Payment"
+    }
+    
     let transaction: GENTransaction
-
+    
     var iconName: String {
         switch transaction.name.lowercased() {
         case "food", "dining", "ice cream": return "takeoutbag.and.cup.and.straw"
@@ -89,22 +113,24 @@ struct TransactionRow: View {
         default: return "arrow.left.arrow.right"
         }
     }
-
+    
     var typeLabel: String {
-        transaction.type == .credit ? "Deposit" : "Payment"
+        transaction.type == .credit ? TXT.deposit : TXT.payment
     }
-
+    
     var amountText: String {
         let sign = transaction.type == .credit ? "+" : "-"
         return "\(sign)$\(String(format: "%.2f", transaction.amount))"
     }
-
+    
     var amountColor: Color {
         transaction.type == .credit ? .black : .gray
     }
-
+    
     var body: some View {
         HStack(spacing: 16) {
+            
+            // Display icon
             ZStack {
                 RoundedRectangle(cornerRadius: 8)
                     .fill(Color.black.opacity(0.85))
@@ -113,6 +139,8 @@ struct TransactionRow: View {
                     .font(.system(size: 22))
                     .foregroundColor(.white)
             }
+            
+            // Display transaction name and type
             VStack(alignment: .leading, spacing: 2) {
                 Text(transaction.name)
                     .font(.headline)
@@ -121,7 +149,10 @@ struct TransactionRow: View {
                     .font(.caption)
                     .foregroundColor(.gray)
             }
+            
             Spacer()
+            
+            // Display amount
             Text(amountText)
                 .font(.subheadline)
                 .fontWeight(.semibold)

@@ -8,13 +8,22 @@
 import SwiftUI
 
 struct GENWelcomeView: View {
+    
+    private enum TXT {
+        static let welcome                  = "Welcome"
+    }
+    
+    private enum ASSET {
+        static let bellIcon                 = "bell"
+    }
+    
     let firstName: String?
-
+    
     var body: some View {
         HStack {
             if let firstName, !firstName.isEmpty {
                 HStack(spacing: 0) {
-                    Text("Welcome, ")
+                    Text("\(TXT.welcome), ")
                         .foregroundColor(.gray)
                         .font(.largeTitle)
                     Text(firstName + "!")
@@ -23,24 +32,30 @@ struct GENWelcomeView: View {
                         .fontWeight(.semibold)
                 }
             } else {
-                Text("Welcome")
+                Text(TXT.welcome)
                     .foregroundColor(.black)
                     .font(.largeTitle)
                     .fontWeight(.semibold)
             }
             Spacer()
-            ZStack(alignment: .topTrailing) {
-                Button(action: {
-                    // Bell action
-                }) {
-                    Image(systemName: "bell")
-                        .font(.system(size: 24, weight: .regular))
-                        .foregroundColor(.black)
-                }
-                Circle()
-                    .fill(Color.red)
-                    .frame(width: 12, height: 12)
+            NotificationsButton()
+        }
+    }
+}
+
+extension GENWelcomeView {
+    private func NotificationsButton() -> some View {
+        return ZStack(alignment: .topTrailing) {
+            Button(action: {
+                // Button action
+            }) {
+                Image(systemName: ASSET.bellIcon)
+                    .font(.system(size: 24, weight: .regular))
+                    .foregroundColor(.black)
             }
+            Circle()
+                .fill(Color.red)
+                .frame(width: 12, height: 12)
         }
     }
 }

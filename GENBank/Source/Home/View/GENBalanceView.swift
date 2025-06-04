@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct GENBalanceView: View {
+    
     let formattedBalance: String
-
+    
     var body: some View {
         HStack(alignment: .lastTextBaseline) {
             Text(formattedBalance)
