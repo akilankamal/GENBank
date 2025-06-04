@@ -23,12 +23,12 @@ struct GENDashboardView: View {
                         }
                     case .stats:
                         NavigationStack {
-                            StatsView()
+                            GENStatsView()
                                 .navigationTitle("Stats")
                         }
                     case .profile:
                         NavigationStack {
-                            ProfileView()
+                            GENProfileView()
                                 .navigationTitle("Profile")
                         }
                     }
@@ -64,22 +64,6 @@ struct GENDashboardView: View {
                     .scaleEffect(2)
             }
         }
-    }
-}
-
-struct StatsView: View {
-    var body: some View {
-        Text("Stats Screen")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(.systemGroupedBackground))
-    }
-}
-
-struct ProfileView: View {
-    var body: some View {
-        Text("Profile Screen")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(.systemGroupedBackground))
     }
 }
 
