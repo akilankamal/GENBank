@@ -11,13 +11,12 @@ struct GENDashboardView: View {
     @State private var selectedTab: Tab = .home
 
     var body: some View {
-        ZStack(alignment: .bottom) {
+        VStack(spacing: 0) {
             Group {
                 switch selectedTab {
                 case .home:
                     NavigationStack {
                         GENHomeView()
-                            .navigationTitle("")
                             .navigationBarHidden(true)
                     }
                 case .stats:
@@ -33,29 +32,27 @@ struct GENDashboardView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(.systemGroupedBackground).ignoresSafeArea())
-            
-            VStack {
+            Spacer(minLength: 0)
+            HStack {
+                GENFloatingTabBar(selected: $selectedTab)
+                    .padding(.leading, 24)
                 Spacer()
-                HStack {
-                    GENFloatingTabBar(selected: $selectedTab)
-                        .padding(.leading, 24)
-                    Spacer()
-                    Button(action: {
-                        // Action for +
-                    }) {
-                        Image(systemName: "plus")
-                            .font(.system(size: 24, weight: .bold))
-                            .foregroundColor(.white)
-                            .frame(width: 56, height: 56)
-                            .background(Color.black)
-                            .clipShape(Circle())
-                            .shadow(radius: 8)
-                    }
-                    .padding(.trailing, 24)
+                Button(action: {
+                    // Action for +
+                }) {
+                    Image(systemName: "plus")
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundColor(.white)
+                        .frame(width: 56, height: 56)
+                        .background(Color.black)
+                        .clipShape(Circle())
+                        .shadow(radius: 8)
                 }
+                .padding(.trailing, 24)
             }
+            .background(Color(.systemGroupedBackground).ignoresSafeArea(edges: .bottom))
         }
+        .background(Color(.systemGroupedBackground).ignoresSafeArea())
     }
 }
 

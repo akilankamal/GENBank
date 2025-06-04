@@ -47,6 +47,7 @@ struct GENHomeView: View {
                 .padding(.bottom, 16)
             }
         }
+        .background(Color(.systemGroupedBackground))
         .onAppear {
             viewModel.fetchAccountDetails()
         }
