@@ -7,6 +7,12 @@
 
 import Foundation
 
+// Mock account detail for testing
+let mockAccountDetails = GENAccountDetails(profile: mockProfile,
+                                           account: mockAccount,
+                                           recipients: mockRecipients,
+                                           transactions: mockTransactions)
+
 private let mockProfile = GENProfile(firstName: "Akilan",
                              lastName: "Kamalakannan")
 
@@ -71,8 +77,3 @@ private let mockTransactions: [GENTransaction] = [
     GENTransaction(type: .debit, name: "Utilities", amount: 65.00, timestamp: Date().addingTimeInterval(-18 * 24 * 60 * 60 * 1)),
     GENTransaction(type: .debit, name: "Dining", amount: 50.00, timestamp: Date())
 ]
-
-let mockAccountDetails = GENAccountDetails(profile: mockProfile,
-                                           account: mockAccount,
-                                           recipients: mockRecipients,
-                                           transactions: mockTransactions)

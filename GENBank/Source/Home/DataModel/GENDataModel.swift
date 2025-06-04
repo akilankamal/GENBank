@@ -7,6 +7,7 @@
 
 import Foundation
 
+// Model obtained by Service
 struct GENAccountDetails {
     let profile: GENProfile
     let account: GENAccount
@@ -20,8 +21,8 @@ struct GENProfile {
 }
 
 enum GENTransactionType: String {
-    case credit = "Credit"
-    case debit = "Debit"
+    case credit
+    case debit
 }
 
 struct GENTransaction: Identifiable {

@@ -9,6 +9,15 @@ import SwiftUI
 
 struct GENDashboardView: View {
     
+    private enum TXT {
+        static let statsTitle               = "Stats"
+        static let profileTitle             = "Profile"
+    }
+    
+    private enum ASSET {
+        static let plusIcon                 = "plus"
+    }
+    
     // Home selected by default
     @State private var selectedTab: Tab = .home
     
@@ -42,7 +51,7 @@ struct GENDashboardView: View {
 }
     
 extension GENDashboardView {
-    fileprivate func MainContentView() -> some View {
+    private func MainContentView() -> some View {
         return Group {
             switch selectedTab {
             case .home:
@@ -53,19 +62,19 @@ extension GENDashboardView {
             case .stats:
                 NavigationStack {
                     GENStatsView()
-                        .navigationTitle("Stats")
+                        .navigationTitle(TXT.statsTitle)
                 }
             case .profile:
                 NavigationStack {
                     GENProfileView()
-                        .navigationTitle("Profile")
+                        .navigationTitle(TXT.profileTitle)
                 }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
-    fileprivate func FloatingBottomView() -> some View {
+    private func FloatingBottomView() -> some View {
         return HStack {
             
             // Floating tab bar
@@ -85,7 +94,7 @@ extension GENDashboardView {
         return Button(action: {
             // Action for +
         }) {
-            Image(systemName: "plus")
+            Image(systemName: ASSET.plusIcon)
                 .font(.system(size: 24, weight: .bold))
                 .foregroundColor(.white)
                 .frame(width: 56, height: 56)

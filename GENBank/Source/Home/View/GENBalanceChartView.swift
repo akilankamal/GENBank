@@ -8,24 +8,20 @@
 import SwiftUI
 import Charts
 
-enum ChartRange: String, CaseIterable, Identifiable {
-    case oneDay = "1D", fiveDays = "5D", oneMonth = "1M", threeMonths = "3M", sixMonths = "6M", oneYear = "1Y"
-    var id: String { rawValue }
-    var days: Int {
-        switch self {
-        case .oneDay: return 1
-        case .fiveDays: return 5
-        case .oneMonth: return 30
-        case .threeMonths: return 90
-        case .sixMonths: return 180
-        case .oneYear: return 365
-        }
-    }
-}
-
 struct GENBalanceChartView: View {
+    
+    private enum KEYS {
+        static let date                     = "date"
+        static let balance                  = "balance"
+    }
+    
+    // Transactions from Account details
     let transactions: [GENTransaction]
+    
+    // Range selected by user
     @State private var selectedRange: ChartRange = .oneMonth
+    
+    // Point on chart selected by user
     @State private var selectedSnapshot: (date: Date, balance: Double)?
 
     private var balanceHistory: [(date: Date, balance: Double)] {
@@ -34,7 +30,7 @@ struct GENBalanceChartView: View {
         let sorted = transactions.sorted { $0.timestamp < $1.timestamp }
         for tx in sorted {
             running += (tx.type == .credit ? tx.amount : -tx.amount)
-            history.append((tx.timestamp, running))
+            history.append((date: tx.timestamp, balance: running))
         }
         let cutoff = Calendar.current.date(byAdding: .day, value: -selectedRange.days, to: Date()) ?? Date()
         return history.filter { $0.0 >= cutoff }
@@ -42,98 +38,149 @@ struct GENBalanceChartView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Chart {
-                ForEach(balanceHistory, id: \.date) { point in
-                    LineMark(
-                        x: .value("Date", point.date),
-                        y: .value("Balance", point.balance)
-                    )
-                    .interpolationMethod(.catmullRom)
-                    .foregroundStyle(.white)
-                    .lineStyle(StrokeStyle(lineWidth: 3))
+            ChartView()
+                .chartOverlay { proxy in
+                    ChartOverlayView(proxy)
                 }
-                if let selected = selectedSnapshot {
-                    PointMark(
-                        x: .value("Date", selected.date),
-                        y: .value("Balance", selected.balance)
-                    )
-                    .symbol {
-                        Circle()
-                            .strokeBorder(Color.red, lineWidth: 3)
-                            .background(Circle().fill(Color.white))
-                            .frame(width: 14, height: 14)
-                    }
-                }
-            }
-            .chartXAxis(.hidden)
-            .chartYAxis {
-                AxisMarks(position: .leading) {
-                    AxisGridLine().foregroundStyle(Color.white.opacity(0.2))
-                    AxisTick().foregroundStyle(Color.white)
-                    AxisValueLabel().foregroundStyle(Color.white)
-                }
-            }
-            .background(Color.black)
-            .chartOverlay { proxy in
-                GeometryReader { geo in
-                    if let plotFrame = proxy.plotFrame {
-                        Rectangle()
-                            .fill(Color.clear)
-                            .contentShape(Rectangle())
-                            .gesture(
-                                DragGesture(minimumDistance: 0)
-                                    .onChanged { value in
-                                        let xPosition = value.location.x - geo[plotFrame].origin.x
-                                        if let date: Date = proxy.value(atX: xPosition) {
-                                            if let nearest = balanceHistory.min(by: { abs($0.date.timeIntervalSince(date)) < abs($1.date.timeIntervalSince(date)) }) {
-                                                selectedSnapshot = nearest
-                                            }
-                                        }
-                                    }
-                            )
-                            .onTapGesture {
-                                selectedSnapshot = nil
-                            }
-                        if let selected = selectedSnapshot,
-                           let posX = proxy.position(forX: selected.date),
-                           let posY = proxy.position(forY: selected.balance) {
-                            SelectedAmountLabel(amount: selected.balance, posX: posX, posY: posY)
-                        }
-                    }
-                }
-            }
             
-            // Picker at the bottom
-            HStack(spacing: 0) {
-                ForEach(ChartRange.allCases) { range in
-                    Button(action: {
-                        selectedRange = range
-                        selectedSnapshot = nil
-                    }) {
-                        Text(range.rawValue)
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 8)
-                            .background(
-                                selectedRange == range
-                                ? Color.white.opacity(0.15)
-                                : Color.clear
-                            )
-                            .cornerRadius(10)
-                    }
-                }
-            }
-            .background(Color.clear)
-            .padding(.horizontal)
-            .padding(.vertical, 12)
+            ChartRangeSegment()
+                .padding(.top, 12)
+                .background(Color.clear)
         }
         .padding(12)
         .background(Color.black)
     }
 }
 
+extension GENBalanceChartView {
+    
+    private enum ChartRange: String, CaseIterable, Identifiable {
+        case oneDay = "1D",
+             fiveDays = "5D",
+             oneMonth = "1M",
+             threeMonths = "3M",
+             sixMonths = "6M",
+             oneYear = "1Y"
+        
+        var id: String { rawValue }
+        
+        var days: Int {
+            switch self {
+            case .oneDay: return 1
+            case .fiveDays: return 5
+            case .oneMonth: return 30
+            case .threeMonths: return 90
+            case .sixMonths: return 180
+            case .oneYear: return 365
+            }
+        }
+    }
+    
+    private func ChartView() -> some View {
+        return Chart {
+            
+            // Plot the balance history as a line chart
+            ForEach(balanceHistory, id: \.date) { point in
+                LineMark(
+                    x: .value(KEYS.date, point.date),
+                    y: .value(KEYS.balance, point.balance)
+                )
+                .interpolationMethod(.catmullRom)
+                .foregroundStyle(.white)
+                .lineStyle(StrokeStyle(lineWidth: 3))
+            }
+            
+            // Highlight the selected point on chart
+            if let selected = selectedSnapshot {
+                PointMark(
+                    x: .value(KEYS.date, selected.date),
+                    y: .value(KEYS.balance, selected.balance)
+                )
+                .symbol {
+                    Circle()
+                        .strokeBorder(Color.red, lineWidth: 3)
+                        .background(Circle().fill(Color.white))
+                        .frame(width: 14, height: 14)
+                }
+            }
+        }
+        
+        // Configure chart appearance
+        // Hide X axis as it is replaced with Range segment
+        .chartXAxis(.hidden)
+        
+        // Configure Y axis with custom styling
+        .chartYAxis {
+            AxisMarks(position: .leading) {
+                AxisGridLine().foregroundStyle(Color.white.opacity(0.2))
+                AxisTick().foregroundStyle(Color.white)
+                AxisValueLabel().foregroundStyle(Color.white)
+            }
+        }
+        .background(Color.black)
+    }
+    
+    private func ChartOverlayView(_ proxy: ChartProxy) -> GeometryReader<TupleView<(some View, SelectedAmountLabel?)>?> {
+        return GeometryReader { geo in
+            if let plotFrame = proxy.plotFrame {
+                
+                // Overlay for interaction on the chart
+                Rectangle()
+                    .fill(Color.clear)
+                    .contentShape(Rectangle())
+                    .gesture(
+                        DragGesture(minimumDistance: 0)
+                            .onChanged { value in
+                                let xPosition = value.location.x - geo[plotFrame].origin.x
+                                if let date: Date = proxy.value(atX: xPosition) {
+                                    if let nearest = balanceHistory.min(by: { abs($0.date.timeIntervalSince(date)) < abs($1.date.timeIntervalSince(date)) }) {
+                                        
+                                        // Update selected snapshot to nearest point
+                                        selectedSnapshot = nearest
+                                    }
+                                }
+                            }
+                    )
+                    .onTapGesture {
+                        selectedSnapshot = nil
+                    }
+                
+                // Display selected amount label if a point is selected
+                if let selected = selectedSnapshot,
+                   let posX = proxy.position(forX: selected.date),
+                   let posY = proxy.position(forY: selected.balance) {
+                    SelectedAmountLabel(amount: selected.balance, posX: posX, posY: posY)
+                }
+            }
+        }
+    }
+    
+    private func ChartRangeSegment() -> HStack<ForEach<[ChartRange], String, Button<some View>>> {
+        return HStack(spacing: 0) {
+            ForEach(ChartRange.allCases) { range in
+                Button(action: {
+                    selectedRange = range
+                    selectedSnapshot = nil
+                }) {
+                    Text(range.rawValue)
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .background(
+                            selectedRange == range
+                            ? Color.white.opacity(0.15)
+                            : Color.clear
+                        )
+                        .cornerRadius(10)
+                }
+            }
+        }
+    }
+}
+
+// Label to display selected amount on chart
 struct SelectedAmountLabel: View {
     let amount: Double
     let posX: CGFloat
