@@ -23,7 +23,7 @@ struct GENBalanceChartView: View {
     
     // Point on chart selected by user
     @State private var selectedSnapshot: (date: Date, balance: Double)?
-
+    
     private var balanceHistory: [(date: Date, balance: Double)] {
         var history: [(Date, Double)] = []
         var running = 0.0
@@ -35,7 +35,7 @@ struct GENBalanceChartView: View {
         let cutoff = Calendar.current.date(byAdding: .day, value: -selectedRange.days, to: Date()) ?? Date()
         return history.filter { $0.0 >= cutoff }
     }
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             ChartView()
@@ -185,7 +185,7 @@ struct SelectedAmountLabel: View {
     let amount: Double
     let posX: CGFloat
     let posY: CGFloat
-
+    
     private var formattedAmount: String {
         let formatter = NumberFormatter()
         formatter.minimumFractionDigits = 0
@@ -193,7 +193,7 @@ struct SelectedAmountLabel: View {
         formatter.numberStyle = .decimal
         return formatter.string(from: NSNumber(value: amount)) ?? "\(amount)"
     }
-
+    
     var body: some View {
         Text(formattedAmount)
             .font(.caption)

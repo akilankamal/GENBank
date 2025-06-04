@@ -49,7 +49,7 @@ struct GENDashboardView: View {
         }
     }
 }
-    
+
 extension GENDashboardView {
     private func MainContentView() -> some View {
         return Group {
