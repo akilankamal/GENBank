@@ -40,7 +40,6 @@ struct GENWelcomeView: View {
                 Circle()
                     .fill(Color.red)
                     .frame(width: 12, height: 12)
-                    .offset(x: 8, y: -6)
             }
         }
     }

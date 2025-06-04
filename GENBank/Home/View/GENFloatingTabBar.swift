@@ -1,5 +1,5 @@
 //
-//  FloatingTabBar.swift
+//  GENFloatingTabBar.swift
 //  GENBank
 //
 //  Created by Akilan Kamalakannan on 04/06/25.
@@ -22,7 +22,7 @@ enum Tab: String, CaseIterable {
     }
 }
 
-struct FloatingTabBar: View {
+struct GENFloatingTabBar: View {
     @Binding var selected: Tab
 
     var body: some View {
@@ -52,4 +52,8 @@ struct FloatingTabBar: View {
         .clipShape(Capsule())
         .shadow(radius: 8)
     }
+}
+
+#Preview {
+    GENFloatingTabBar(selected: .constant(.home))
 }

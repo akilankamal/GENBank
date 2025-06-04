@@ -24,7 +24,8 @@ enum GENTransactionType: String {
     case debit = "Debit"
 }
 
-struct GENTransaction {
+struct GENTransaction: Identifiable {
+    let id = UUID()
     let type: GENTransactionType
     let name: String
     let amount: Double
