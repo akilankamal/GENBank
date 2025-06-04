@@ -11,7 +11,7 @@ import SwiftUI
 struct GENBankApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            GENDashboardView()
         }
     }
 }
